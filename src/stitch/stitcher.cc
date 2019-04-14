@@ -29,39 +29,54 @@ namespace pano {
 const static bool DEBUG_OUT = false;
 const static char* MATCHINFO_DUMP = "log/matchinfo.txt";
 
-Mat32f Stitcher::build() {
-  calc_feature();
-  // TODO choose a better starting point by MST use centrality
+Mat32f Stitcher::build()
+{
+    calc_feature();
+    // TODO choose a better starting point by MST use centrality
 
-  pairwise_matches.resize(imgs.size());
-  for (auto& k : pairwise_matches) k.resize(imgs.size());
-  if (ORDERED_INPUT)
-    linear_pairwise_match();
-  else
-    pairwise_match();
-  free_feature();
-  //load_matchinfo(MATCHINFO_DUMP);
-  if (DEBUG_OUT) {
-    draw_matchinfo();
-    dump_matchinfo(MATCHINFO_DUMP);
-  }
-  assign_center();
+    pairwise_matches.resize(imgs.size());
+    for (auto& k : pairwise_matches)
+    {
+        k.resize(imgs.size());
+    }
+  
+    if (ORDERED_INPUT)
+        linear_pairwise_match();
+    else
+        pairwise_match();
+  
+    free_feature();
+  
+    //load_matchinfo(MATCHINFO_DUMP);
+  
+    if (DEBUG_OUT)
+    {
+        draw_matchinfo();
+        dump_matchinfo(MATCHINFO_DUMP);
+    }
+  
+    assign_center();
 
-  if (ESTIMATE_CAMERA)
-    estimate_camera();
-  else
-    build_linear_simple();		// naive mode
-  pairwise_matches.clear();
-  // TODO automatically determine projection method even in naive mode
-  if (ESTIMATE_CAMERA)
-    bundle.proj_method = ConnectedImages::ProjectionMethod::spherical;
-  else
-    bundle.proj_method = ConnectedImages::ProjectionMethod::flat;
-  print_debug("Using projection method: %d\n", bundle.proj_method);
-  bundle.update_proj_range();
+    if (ESTIMATE_CAMERA)
+        estimate_camera();
+    else
+        build_linear_simple();		// naive mode
+  
+    pairwise_matches.clear();
+  
+    // TODO automatically determine projection method even in naive mode
+    if (ESTIMATE_CAMERA)
+        bundle.proj_method = ConnectedImages::ProjectionMethod::spherical;
+    else
+        bundle.proj_method = ConnectedImages::ProjectionMethod::flat;
+  
+    print_debug("Using projection method: %d\n", bundle.proj_method);
 
-  return bundle.blend();
+    bundle.update_proj_range();
+
+    return bundle.blend();
 }
+
 
 bool Stitcher::match_image(
     const PairWiseMatcher& pwmatcher, int i, int j) {

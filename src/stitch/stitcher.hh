@@ -47,16 +47,19 @@ class Stitcher : public StitcherBase {
 		void draw_matchinfo();
 		void dump_matchinfo(const char*) const;
 		void load_matchinfo(const char*);
-	public:
-		template<typename U, typename X =
-			disable_if_same_or_derived<Stitcher, U>>
-			Stitcher(U&& i) : StitcherBase(std::forward<U>(i)) {
-				bundle.component.resize(imgs.size());
-				REP(i, imgs.size())
-					bundle.component[i].imgptr = &imgs[i];
-			}
+    public:
+	template<typename U, typename X = disable_if_same_or_derived<Stitcher, U>>
+	Stitcher(U&& i)
+	: StitcherBase(std::forward<U>(i))
+	{
+	    bundle.component.resize(imgs.size());
+	    REP(i, imgs.size())
+	    {
+	        bundle.component[i].imgptr = &imgs[i];
+	    }
+	}
 
-		virtual Mat32f build();
+	virtual Mat32f build();
 };
 
 }

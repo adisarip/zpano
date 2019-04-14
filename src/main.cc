@@ -218,7 +218,10 @@ void test_warp(int argc, char* argv[])
 void work(int argc, char* argv[])
 {
     vector<string> imgs;
-    REPL(i, 1, argc) imgs.emplace_back(argv[i]);
+    REPL(i, 1, argc)
+    {
+        imgs.emplace_back(argv[i]);
+    }
     Mat32f res;
 
     if (CYLINDER)

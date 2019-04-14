@@ -46,8 +46,6 @@ CXXFLAGS += $(DEFINES) -std=c++11 $(OPTFLAGS)
 LDFLAGS += $(OPTFLAGS)
 LDFLAGS += -ljpeg $(OMP_FLAG)
 
-SOFLAGS = $(shell python-config --includes --ldflags)
-
 SHELL = bash
 # sources to include
 SRCDIRS = lib feature stitch third-party/lodepng
@@ -78,11 +76,6 @@ $(OBJ_DIR)/%.d: %.cc Makefile
 $(TARGET): main.cc $(OBJS)
 	@echo "Linking ..."
 	@$(CXX) $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
-	@echo "done."
-
-$(SO): $(OBJS) python/pybind.cc
-	@echo "[so] $@ ..."
-	@$(CXX) $^ -fPIC -shared -o $@ $(CXXFLAGS) $(LDFLAGS) $(SOFLAGS)
 	@echo "done."
 
 clean:
