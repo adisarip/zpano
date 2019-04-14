@@ -8,18 +8,6 @@
 using namespace std;
 
 
-void work(int argc, char* argv[])
-{
-    vector<string> imgs;
-    REPL(i, 1, argc)
-    {
-        imgs.emplace_back(argv[i]);
-    }
-    Mat32f res;
-
-    calc_feature();
-}
-
 
 int main(int argc, char* argv[])
 {
@@ -28,6 +16,11 @@ int main(int argc, char* argv[])
         error_exit("Need at least two images to stitch.\n");
     }
 
-    //init_config();
-    work(argc, argv);
+    vector<string> imgs;
+    REPL(i, 1, argc)
+    {
+        imgs.emplace_back(argv[i]);
+    }
+
+    calc_feature();
 }
