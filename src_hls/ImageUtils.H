@@ -53,7 +53,7 @@ inline float sqr(float x) { return x * x; }
 #define REPL(x, y, z) for (typename std::remove_cv<typename std::remove_reference<decltype(y)>::type>::type x = y; x < (z); x ++)
 #define REPD(x, y, z) for (typename std::remove_cv<typename std::remove_reference<decltype(y)>::type>::type x = y; x >= (z); x --)
 
-std::string TERM_COLOR(int k);
+//std::string TERM_COLOR(int k);
 
 #define COLOR_RED     "\x1b[31m"
 #define COLOR_GREEN   "\x1b[32m"

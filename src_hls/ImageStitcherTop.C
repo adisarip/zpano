@@ -4,7 +4,7 @@
 #include <string>
 #include <cmath>
 #include <queue>
-#include "ImageStitcherTop.h"
+#include "ImageStitcherTop.H"
 
 using namespace std;
 

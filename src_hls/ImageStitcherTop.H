@@ -1,7 +1,7 @@
 
 #include <vector>
 #include <memory>
-#include "IMAGE_UTILS.h"
+#include "ImageUtils.H"
 
 
 std::vector<ImageRef> imgs;

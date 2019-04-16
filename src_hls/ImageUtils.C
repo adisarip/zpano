@@ -2,7 +2,7 @@
 
 #include <mutex>
 #include "CImg.h"
-#include "ImageUtils.h"
+#include "ImageUtils.H"
 
 
 // jpeg can be disabled by compiling with -DDISABLE_JPEG
@@ -70,14 +70,17 @@ TotalTimer::~TotalTimer() {
 //File: matrix.cc
 //===============
 
-//#include <Eigen/Dense>
+#undef Success
+#include <Eigen/Dense>
 
-/*inline Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>
+namespace {
+inline Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>
 	to_eigenmap(const Matrix& m) {
 		return Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>(
 				(double*)m.ptr(), m.rows(), m.cols());
 	}
-*/
+}
+
 ostream& operator << (std::ostream& os, const Matrix & m) {
 	os << "[" << m.rows() << " " << m.cols() << "] :" << endl;
 	REP(i, m.rows()) REP(j, m.cols())
@@ -92,17 +95,15 @@ Matrix Matrix::transpose() const {
 	return ret;
 }
 
-/*
 Matrix Matrix::prod(const Matrix & r) const {
 	using namespace Eigen;
 	Matrix ret(m_rows, r.cols());
-	auto m1 = to_eigenmap(*this),
-			 m2 = to_eigenmap(r),
-			 res = to_eigenmap(ret);
+	auto m1 = to_eigenmap(*this);
+        auto m2 = to_eigenmap(r);
+        auto res = to_eigenmap(ret);
 	res = m1 * m2;
 	return ret;
 }
-*/
 
 Matrix Matrix::elem_prod(const Matrix& r) const {
 	m_assert(m_rows == r.rows() && m_cols == r.cols());
@@ -130,13 +131,13 @@ Matrix Matrix::operator + (const Matrix& r) const {
 	return ret;
 }
 
-/*
+
 bool Matrix::inverse(Matrix &ret) const {
 	m_assert(m_rows == m_cols);
 	using namespace Eigen;
 	ret = Matrix(m_rows, m_rows);
-	auto input = to_eigenmap(*this),
-			 res = to_eigenmap(ret);
+	auto input = to_eigenmap(*this);
+        auto res = to_eigenmap(ret);
 	FullPivLU<Eigen::Matrix<double,Dynamic,Dynamic,RowMajor>> lu(input);
 	if (! lu.isInvertible()) return false;
 	res = lu.inverse().eval();
@@ -163,7 +164,7 @@ Matrix Matrix::pseudo_inverse() const {
 	m_assert(ret.at(0, 2) == res(0, 2));
 	return ret;
 }
-*/
+
 
 void Matrix::normrot() {
 	m_assert(m_cols == 3);

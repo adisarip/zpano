@@ -3,10 +3,9 @@
 #include <cmath>
 #include <ctime>
 #include <cassert>
-#include "ImageStitcherTop.h"
+#include "ImageStitcherTop.H"
 
 using namespace std;
-
 
 
 int main(int argc, char* argv[])
