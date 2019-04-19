@@ -1092,9 +1092,4 @@ struct ImageRef
     {
         return _height;
     }
-
-    //Shape2D shape() const
-    //{
-    //    return {_width, _height};
-    //}
 };
