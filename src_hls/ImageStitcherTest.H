@@ -1,9 +1,15 @@
 
-//=================
-//File: imageref.hh
-//=================
+#ifndef _IMAGE_STITCHER_TEST_H
+#define _IMAGE_STITCHER_TEST_H
 
+
+#include <string>
+#include <memory>
 #include "ImageUtils.H"
+
+Mat32f read_img(const char* fname);
+void write_rgb(const char* fname, const Mat32f& mat);
+inline void write_rgb(const std::string s, const Mat32f& mat);
 
 // A transparent reference to a image in file
 struct ImageRef
@@ -14,34 +20,11 @@ struct ImageRef
 
     ImageRef(const std::string& fname): fname(fname) {}
     ~ImageRef() { if (img) delete img; }
-
-    void load()
-    {
-        if (img)
-        {
-            return;
-        }
-        img = new Mat32f{read_img(fname.c_str())};
-        _width = img->width();
-        _height = img->height();
-    }
-
-    void release()
-    {
-        if (img)
-        {
-            delete img;
-        }
-    img = nullptr;
-    }
-
-    int width() const
-    {
-        return _width;
-    }
-
-    int height() const
-    {
-        return _height;
-    }
+    inline int width() const {return _width;}
+    inline int height() const { return _height;}
+    void load();
+    void release();
 };
+
+
+#endif /* _IMAGE_STITCHER_TEST_H */

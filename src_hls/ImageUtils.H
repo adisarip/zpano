@@ -1,4 +1,8 @@
 
+#ifndef _IMAGE_UTILS_H_
+#define _IMAGE_UTILS_H_
+
+
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
@@ -53,7 +57,7 @@ inline float sqr(float x) { return x * x; }
 #define REPL(x, y, z) for (typename std::remove_cv<typename std::remove_reference<decltype(y)>::type>::type x = y; x < (z); x ++)
 #define REPD(x, y, z) for (typename std::remove_cv<typename std::remove_reference<decltype(y)>::type>::type x = y; x >= (z); x --)
 
-//std::string TERM_COLOR(int k);
+std::string TERM_COLOR(int k);
 
 #define COLOR_RED     "\x1b[31m"
 #define COLOR_GREEN   "\x1b[32m"
@@ -63,123 +67,89 @@ inline float sqr(float x) { return x * x; }
 #define COLOR_CYAN    "\x1b[36m"
 #define COLOR_RESET   "\x1b[0m"
 
+/*
+#define P(a) std::cout << (a) << std::endl
+#define PP(a) std::cout << #a << ": " << (a) << std::endl
+#define PA(arr) \
+    do { \
+        std::cout << #arr << ": "; \
+        std::copy(begin(arr), end(arr), std::ostream_iterator<std::remove_reference<decltype(arr)>::type::value_type>(std::cout, " ")); \
+        std::cout << std::endl;  \
+    } while (0)
+*/
+
 void c_printf(const char* col, const char* fmt, ...);
-
 void c_fprintf(const char* col, FILE* fp, const char* fmt, ...);
-
-__attribute__ (( format( printf, 1, 2 ) ))
 std::string ssprintf(const char *fmt, ...);
 
+
 template<typename T>
-inline bool update_min(T &dest, const T &val) {
-    if (val < dest) {
+inline bool update_min(T &dest, const T &val)
+{
+    if (val < dest)
+    {
         dest = val; return true;
     }
     return false;
 }
 
+
 template<typename T>
-inline bool update_max(T &dest, const T &val) {
-    if (dest < val) {
+inline bool update_max(T &dest, const T &val)
+{
+    if (dest < val)
+    {
         dest = val; return true;
     }
     return false;
 }
+
 
 template <typename T>
-inline void free_2d(T** ptr, int w) {
+inline void free_2d(T** ptr, int w)
+{
     if (ptr != nullptr)
+    {
         for (int i = 0; i < w; i ++)
+        {
             delete[] ptr[i];
+        }
+    }
     delete[] ptr;
 }
 
+
 template <typename T>
-std::shared_ptr<T> create_auto_buf(size_t len, bool init_zero = false) {
+std::shared_ptr<T> create_auto_buf(size_t len, bool init_zero = false)
+{
     std::shared_ptr<T> ret(new T[len], std::default_delete<T[]>());
     if (init_zero)
+    {
         memset(ret.get(), 0, sizeof(T) * len);
+    }
     return ret;
 }
 
 
-inline bool exists_file(const char* name) {
+inline bool exists_file(const char* name)
+{
     struct stat buffer;
     return stat(name, &buffer) == 0;
 }
 
-inline bool endswith(const char* str, const char* suffix) {
-    if (!str || !suffix) return false;
-    auto l1 = strlen(str), l2 = strlen(suffix);
-    if (l2 > l1) return false;
-    return strncmp(str + l1 - l2, suffix, l2) == 0;
-}
 
-
-
-//==============
-//File: utils.cc
-//==============
-
-std::string TERM_COLOR(int k) {
-    // k = 0 ~ 4
-    std::ostringstream ss;
-    ss << "\x1b[3" << k + 2 << "m";
-    return ss.str();
-}
-
-void c_printf(const char* col, const char* fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    printf("%s", col);
-    vprintf(fmt, ap);
-    printf(COLOR_RESET);
-    va_end(ap);
-}
-
-void c_fprintf(const char* col, FILE* fp, const char* fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    fprintf(fp, "%s", col);
-    vfprintf(fp, fmt, ap);
-    fprintf(fp, COLOR_RESET);
-    va_end(ap);
-}
-
-
-std::string ssprintf(const char *fmt, ...) {
-    int size = 100;
-    char *p = (char *)malloc(size);
-
-    va_list ap;
-
-    std::string ret;
-
-    while (true) {
-        va_start(ap, fmt);
-        int n = vsnprintf(p, size, fmt, ap);
-        va_end(ap);
-
-        if (n < 0) {
-            free(p);
-            return "";
-        }
-
-        if (n < size) {
-            ret = p;
-            free(p);
-            return ret;
-        }
-
-        size = n + 1;
-
-        char *np = (char *)realloc(p, size);
-        if (np == nullptr) {
-            free(p);
-            return "";
-        } else
-            p = np;
+inline bool endswith(const char* str, const char* suffix)
+{
+    if (!str || !suffix)
+    {
+        return false;
     }
+    auto l1 = strlen(str), l2 = strlen(suffix);
+    if (l2 > l1)
+    {
+        return false;
+    }
+    return strncmp(str + l1 - l2, suffix, l2) == 0;
 }
 
 
@@ -187,87 +157,25 @@ std::string ssprintf(const char *fmt, ...) {
 //File: debugutils.hh
 //===================
 
-#ifdef _WIN32
-#define __attribute__(x)
-#endif
-
-#define P(a) std::cout << (a) << std::endl
-#define PP(a) std::cout << #a << ": " << (a) << std::endl
-#define PA(arr) \
-	do { \
-		std::cout << #arr << ": "; \
-		std::copy(begin(arr), end(arr), std::ostream_iterator<std::remove_reference<decltype(arr)>::type::value_type>(std::cout, " ")); \
-		std::cout << std::endl;  \
-	} while (0)
-
 void __m_assert_check__(bool val, const char *expr,
-		const char *file, const char *func, int line);
+        const char *file, const char *func, int line);
 
+void error_exit(const std::string& s);
 
-void error_exit(const char *msg) __attribute__((noreturn));
-
-inline void error_exit(const std::string& s) __attribute__((noreturn));
-void error_exit(const std::string& s) {
-	error_exit(s.c_str());
-}
+void error_exit(const char *msg);
 
 // keep print_debug
 #define print_debug(fmt, ...) __print_debug__(__FILE__, __func__, __LINE__, fmt, ## __VA_ARGS__)
-//#define print_debug(fmt, ...)
 
-void __print_debug__(const char *file, const char *func, int line, const char *fmt, ...)
-	__attribute__((format(printf, 4, 5)));
+void __print_debug__(const char *file, const char *func, int line, const char *fmt, ...);
+
 
 #ifdef DEBUG
 #define m_assert(expr) \
-	__m_assert_check__((expr), # expr, __FILE__, __func__ , __LINE__)
+    __m_assert_check__((expr), # expr, __FILE__, __func__ , __LINE__)
 #else
 #define m_assert(expr)
 #endif
-
-
-
-//===================
-//File: debugutils.cc
-//===================
-
-
-void __m_assert_check__(bool val, const char *expr, const char *file, const char *func, int line)
-{
-	if (val)
-		return;
-	c_fprintf(COLOR_RED, stderr, "assertion \"%s\" failed, in %s, (%s:%d)\n",
-			expr, func, file, line);
-	abort();
-	//exit(1);
-}
-
-
-void __print_debug__(const char *file, const char *func, int line, const char *fmt, ...)
-{
-	static map<int, string> colormap;
-	if (! colormap[line].length()) {
-		int color = std::hash<int>()(line) % 5;
-#pragma omp critical
-		colormap[line] = TERM_COLOR(color);
-	}
-
-  char *fdup = strdup(file);
-  char *fbase = basename(fdup);
-  c_fprintf(colormap[line].c_str(), stderr, "[%s@%s:%d] ", func, fbase, line);
-  free(fdup);
-
-	va_list ap;
-	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
-	va_end(ap);
-}
-
-
-void error_exit(const char *msg) {
-	c_fprintf(COLOR_RED, stderr, "error: %s\n", msg);
-	exit(1);
-}
 
 
 //===========
@@ -276,55 +184,60 @@ void error_exit(const char *msg) {
 
 
 template <typename T>
-class Mat {
+class Mat
+{
+    // public members
     public:
-                Mat(){}
-                Mat(int rows, int cols, int channels):
-                    m_rows(rows), m_cols(cols), m_channels(channels),
-                    m_data{new T[rows * cols * channels], std::default_delete<T[]>() }
-                { }
 
-                virtual ~Mat(){}
+    Mat(){}
+    Mat(int rows, int cols, int channels):
+        m_rows(rows), m_cols(cols), m_channels(channels),
+        m_data{new T[rows * cols * channels], std::default_delete<T[]>() }
+    { }
 
-                T &at(int r, int c, int ch = 0) {
-                    m_assert(r < m_rows);
-                    m_assert(c < m_cols);
-                    m_assert(ch < m_channels);
-                    return ptr(r)[c * m_channels + ch];
-                }
+    virtual ~Mat(){}
 
-                const T &at(int r, int c, int ch = 0) const {
-                    m_assert(r < m_rows);
-                    m_assert(c < m_cols);
-                    m_assert(ch < m_channels);
-                    return ptr(r)[c * m_channels + ch];
-                }
+    T &at(int r, int c, int ch = 0) {
+        m_assert(r < m_rows);
+        m_assert(c < m_cols);
+        m_assert(ch < m_channels);
+        return ptr(r)[c * m_channels + ch];
+    }
 
-                Mat<T> clone() const {
-                    Mat<T> res(m_rows, m_cols, m_channels);
-                    memcpy(res.ptr(0), this->ptr(0), sizeof(T) * m_rows * m_cols * m_channels);
-                    return res;
-                }
+    const T &at(int r, int c, int ch = 0) const {
+        m_assert(r < m_rows);
+        m_assert(c < m_cols);
+        m_assert(ch < m_channels);
+        return ptr(r)[c * m_channels + ch];
+    }
 
-                const T *ptr(int r = 0) const
-                { return m_data.get() + r * m_cols * m_channels; }
-                T *ptr(int r = 0)
-                { return m_data.get() + r * m_cols * m_channels; }
-                const T *ptr(int r, int c) const
-                { return m_data.get() + (r * m_cols + c) * m_channels; }
-                T *ptr(int r, int c)
-                { return m_data.get() + (r * m_cols + c) * m_channels; }
-                int height() const { return m_rows; }
-                int width() const { return m_cols; }
-                int rows() const { return m_rows; }
-                int cols() const { return m_cols; }
-                int channels() const { return m_channels; }
-                int pixels() const { return m_rows * m_cols; }
+    Mat<T> clone() const {
+        Mat<T> res(m_rows, m_cols, m_channels);
+        memcpy(res.ptr(0), this->ptr(0), sizeof(T) * m_rows * m_cols * m_channels);
+        return res;
+    }
 
-        protected:
-                int m_rows, m_cols;
-                int m_channels;
-                std::shared_ptr<T> m_data;
+    const T *ptr(int r = 0) const
+    { return m_data.get() + r * m_cols * m_channels; }
+    T *ptr(int r = 0)
+    { return m_data.get() + r * m_cols * m_channels; }
+    const T *ptr(int r, int c) const
+    { return m_data.get() + (r * m_cols + c) * m_channels; }
+    T *ptr(int r, int c)
+    { return m_data.get() + (r * m_cols + c) * m_channels; }
+    int height() const { return m_rows; }
+    int width() const { return m_cols; }
+    int rows() const { return m_rows; }
+    int cols() const { return m_cols; }
+    int channels() const { return m_channels; }
+    int pixels() const { return m_rows * m_cols; }
+
+    // protected members
+    protected:
+
+    int m_rows, m_cols;
+    int m_channels;
+    std::shared_ptr<T> m_data;
 };
 
 using Mat32f = Mat<float>;
@@ -335,52 +248,53 @@ using Matuc = Mat<unsigned char>;
 //File: matrix.hh
 //===============
 
-class Matrix : public Mat<double> {
-	public:
-		Matrix(){}
+class Matrix : public Mat<double>
+{
+    public:
 
-		Matrix(int rows, int cols):
-			Mat<double>(rows, cols, 1) {}
+    Matrix(){}
+    Matrix(int rows, int cols):
+        Mat<double>(rows, cols, 1) {}
 
-		Matrix(const Mat<double>& r):
-			Mat<double>(r) {}
+    Matrix(const Mat<double>& r):
+        Mat<double>(r) {}
 
-		bool inverse(Matrix & ret) const;
+    bool inverse(Matrix & ret) const;
 
-		Matrix pseudo_inverse() const;
+    Matrix pseudo_inverse() const;
 
-		Matrix transpose() const;
+    Matrix transpose() const;
 
-		Matrix prod(const Matrix & r) const;
+    Matrix prod(const Matrix & r) const;
 
-		Matrix elem_prod(const Matrix& r) const;
+    Matrix elem_prod(const Matrix& r) const;
 
-		Matrix operator * (const Matrix& r) const
-		{ return prod(r); }
+    Matrix operator * (const Matrix& r) const
+    { return prod(r); }
 
-		void mult(double m) {
-			int n = pixels();
-			double* p = ptr();
-			for (int i = 0; i < n; i ++)
-				*p *= m, p++;
-		}
+    void mult(double m) {
+        int n = pixels();
+        double* p = ptr();
+        for (int i = 0; i < n; i ++)
+            *p *= m, p++;
+    }
 
-		Matrix operator - (const Matrix& r) const;
-		Matrix operator + (const Matrix& r) const;
+    Matrix operator - (const Matrix& r) const;
+    Matrix operator + (const Matrix& r) const;
 
-		bool SVD(Matrix & u, Matrix & s, Matrix & v) const;
+    bool SVD(Matrix & u, Matrix & s, Matrix & v) const;
 
-		void normrot();
+    void normrot();
 
-		double sqrsum() const;
+    double sqrsum() const;
 
-		Matrix col(int i) const;
+    Matrix col(int i) const;
 
-		void zero();
+    void zero();
 
-		static Matrix I(int);
+    static Matrix I(int);
 
-		friend std::ostream& operator << (std::ostream& os, const Matrix & m);
+    friend std::ostream& operator << (std::ostream& os, const Matrix & m);
 
 };
 
@@ -390,134 +304,136 @@ class Matrix : public Mat<double> {
 //=================
 
 template<typename T>
-class Vector {
-	public:
-		T x = 0, y = 0, z = 0;
+class Vector
+{
+    public:
+        T x = 0, y = 0, z = 0;
 
-		constexpr explicit Vector(T m_x = 0, T m_y = 0, T m_z = 0):
-			x(m_x), y(m_y), z(m_z) {}
+        constexpr explicit Vector(T m_x = 0, T m_y = 0, T m_z = 0):
+            x(m_x), y(m_y), z(m_z) {}
 
-		Vector(const Vector &p0, const Vector &p1):
-			x(p1.x - p0.x), y(p1.y -p0.y), z(p1.z - p0.z) {}
+        Vector(const Vector &p0, const Vector &p1):
+            x(p1.x - p0.x), y(p1.y -p0.y), z(p1.z - p0.z) {}
 
-		explicit Vector(const T* p):
-			x(p[0]), y(p[1]), z(p[2]) {}
+        explicit Vector(const T* p):
+            x(p[0]), y(p[1]), z(p[2]) {}
 
-		T index(int c) const
-		{ return c == 0 ? x : c == 1 ? y : z; }
+        T index(int c) const
+        { return c == 0 ? x : c == 1 ? y : z; }
 
-		T& index(int c)
-		{ return c == 0 ? x : c == 1 ? y : z; }
+        T& index(int c)
+        { return c == 0 ? x : c == 1 ? y : z; }
 
-		T min_comp_abs() const {
-			T a = fabs(x), b = fabs(y), c = fabs(z);
-			::update_min(a, b), ::update_min(a, c);
-			return a;
-		}
+        T min_comp_abs() const {
+            T a = fabs(x), b = fabs(y), c = fabs(z);
+            ::update_min(a, b), ::update_min(a, c);
+            return a;
+        }
 
-		T sqr() const
-		{ return x * x + y * y + z * z; }
+        T sqr() const
+        { return x * x + y * y + z * z; }
 
-		T mod() const
-		{ return sqrt(sqr()); }
+        T mod() const
+        { return sqrt(sqr()); }
 
-		T dot(const Vector &v) const
-		{ return x * v.x + y * v.y + z * v.z; }
+        T dot(const Vector &v) const
+        { return x * v.x + y * v.y + z * v.z; }
 
-		Vector cross(const Vector &v) const
-		{ return Vector(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
+        Vector cross(const Vector &v) const
+        { return Vector(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
 
-		Vector& operator = (const Vector& v)
-		{ x = v.x, y = v.y, z = v.z; return *this; }
+        Vector& operator = (const Vector& v)
+        { x = v.x, y = v.y, z = v.z; return *this; }
 
-		void normalize() {
-			T m = 1 / mod();
-			*this *= m;		// work?
-			m_assert(std::isnormal(m));
-		}
+        void normalize() {
+            T m = 1 / mod();
+            *this *= m;        // work?
+            m_assert(std::isnormal(m));
+        }
 
-		Vector get_normalized() const
-		{ Vector ret(*this); ret.normalize(); return ret; }
+        Vector get_normalized() const
+        { Vector ret(*this); ret.normalize(); return ret; }
 
-		bool is_zero(T threshold = EPS) const
-		{ return fabs(x) < threshold && fabs(y) < threshold && fabs(z) < threshold; }
+        bool is_zero(T threshold = EPS) const
+        { return fabs(x) < threshold && fabs(y) < threshold && fabs(z) < threshold; }
 
-		bool is_positive(T threshold = EPS) const
-		{ return x > threshold && y > threshold && z > threshold; }
+        bool is_positive(T threshold = EPS) const
+        { return x > threshold && y > threshold && z > threshold; }
 
-		void update_min(const Vector &v)
-		{ ::update_min(x, v.x); ::update_min(y, v.y); ::update_min(z, v.z); }
+        void update_min(const Vector &v)
+        { ::update_min(x, v.x); ::update_min(y, v.y); ::update_min(z, v.z); }
 
-		void update_max(const Vector &v)
-		{ ::update_max(x, v.x); ::update_max(y, v.y); ::update_max(z, v.z); }
+        void update_max(const Vector &v)
+        { ::update_max(x, v.x); ::update_max(y, v.y); ::update_max(z, v.z); }
 
-		Vector operator + (const Vector &v) const
-		{ return Vector(x + v.x, y + v.y, z + v.z); }
+        Vector operator + (const Vector &v) const
+        { return Vector(x + v.x, y + v.y, z + v.z); }
 
-		Vector& operator += (const Vector &v)
-		{ x += v.x; y += v.y; z += v.z; return *this; }
+        Vector& operator += (const Vector &v)
+        { x += v.x; y += v.y; z += v.z; return *this; }
 
-		Vector operator - (const Vector &v) const
-		{ return Vector(x - v.x, y - v.y, z - v.z); }
+        Vector operator - (const Vector &v) const
+        { return Vector(x - v.x, y - v.y, z - v.z); }
 
-		Vector operator - () const
-		{ return Vector(-x, -y, -z); }
+        Vector operator - () const
+        { return Vector(-x, -y, -z); }
 
-		Vector& operator -= (const Vector &v)
-		{ x -= v.x; y -= v.y; z -= v.z; return *this; }
+        Vector& operator -= (const Vector &v)
+        { x -= v.x; y -= v.y; z -= v.z; return *this; }
 
-		Vector operator * (T p) const
-		{ return Vector(x * p, y * p, z * p); }
+        Vector operator * (T p) const
+        { return Vector(x * p, y * p, z * p); }
 
-		Vector& operator *= (T p)
-		{ x *= p; y *= p; z *= p; return *this; }
+        Vector& operator *= (T p)
+        { x *= p; y *= p; z *= p; return *this; }
 
-		Vector operator / (T p) const
-		{ return *this * (1.0 / p); }
+        Vector operator / (T p) const
+        { return *this * (1.0 / p); }
 
-		Vector& operator /= (T p)
-		{ x /= p; y /= p; z /= p; return *this; }
+        Vector& operator /= (T p)
+        { x /= p; y /= p; z /= p; return *this; }
 
-		bool operator == (const Vector &v) const
-		{ return fabs(x - v.x) < EPS && fabs(y - v.y) < EPS && fabs(z - v.z) < EPS; }
+        bool operator == (const Vector &v) const
+        { return fabs(x - v.x) < EPS && fabs(y - v.y) < EPS && fabs(z - v.z) < EPS; }
 
-		bool operator != (const Vector &v) const
-		{ return fabs(x - v.x) >= EPS || fabs(y - v.y) >= EPS || fabs(z - v.z) >= EPS; }
+        bool operator != (const Vector &v) const
+        { return fabs(x - v.x) >= EPS || fabs(y - v.y) >= EPS || fabs(z - v.z) >= EPS; }
 
-		friend std::ostream & operator << (std::ostream &os, const Vector& vec)
-		{ return os << vec.x << " " << vec.y << " " << vec.z;}
+        friend std::ostream & operator << (std::ostream &os, const Vector& vec)
+        { return os << vec.x << " " << vec.y << " " << vec.z;}
 
-		static Vector max()
-		{ return Vector(std::numeric_limits<T>::max(), std::numeric_limits<T>::max()); }
+        static Vector max()
+        { return Vector(std::numeric_limits<T>::max(), std::numeric_limits<T>::max()); }
 
-		static Vector infinity()
-		{ return Vector(std::numeric_limits<T>::infinity(), std::numeric_limits<T>::infinity()); }
+        static Vector infinity()
+        { return Vector(std::numeric_limits<T>::infinity(), std::numeric_limits<T>::infinity()); }
 
-		T get_max() const
-		{ return std::max(x, std::max(y, z)); }
+        T get_max() const
+        { return std::max(x, std::max(y, z)); }
 
-		T get_min() const
-		{ return std::min(x, std::min(y, z)); }
+        T get_min() const
+        { return std::min(x, std::min(y, z)); }
 
-		T get_abs_max()
-		{ return std::max(fabs(x), std::max(fabs(y), fabs(z))); }
+        T get_abs_max()
+        { return std::max(fabs(x), std::max(fabs(y), fabs(z))); }
 
-		void write_to(T* p) const
-		{ p[0] = x, p[1] = y, p[2] = z; }
+        void write_to(T* p) const
+        { p[0] = x, p[1] = y, p[2] = z; }
 
-		static Vector get_zero()
-		{ return Vector(0, 0, 0); }
+        static Vector get_zero()
+        { return Vector(0, 0, 0); }
 
-		// i'm norm
-		Vector reflection(const Vector& v) const {
-			m_assert(fabs(v.sqr() - 1) < EPS && (sqr() - 1 < EPS));
-			return *this * 2 * dot(v) - v;
-		}
+        // i'm norm
+        Vector reflection(const Vector& v) const {
+            m_assert(fabs(v.sqr() - 1) < EPS && (sqr() - 1 < EPS));
+            return *this * 2 * dot(v) - v;
+        }
 };
 
 
 template<typename T>
-class Vector2D {
+class Vector2D
+{
     public:
         T x = 0, y = 0;
 
@@ -617,8 +533,10 @@ class Vector2D {
                 std::numeric_limits<T>::max()); }
 };
 
+
 template<typename T>
-std::ostream& operator << (std::ostream& os, const Vector2D<T>& v) {
+std::ostream& operator << (std::ostream& os, const Vector2D<T>& v)
+{
     os << v.x << ' ' << v.y;
     return os;
 }
@@ -629,33 +547,37 @@ typedef Vector2D<int> Coor;
 typedef Vector2D<double> Vec2D;
 
 
-
 //=============
 //File: time.hh
 //=============
 
 
-class Timer {
+class Timer
+{
+    // public members
     public:
-        using Clock = std::chrono::high_resolution_clock;
-        Timer() {
-            restart();
-        }
 
-        // return current unix timestamp
-        void restart() {
-            m_start_time = std::chrono::high_resolution_clock::now();
-        }
+    using Clock = std::chrono::high_resolution_clock;
+    Timer() {
+        restart();
+    }
 
-        // return duration in seconds
-        double duration() const {
-            auto now = std::chrono::high_resolution_clock::now();
-            auto m = std::chrono::duration_cast<std::chrono::microseconds>(now - m_start_time).count();
-            return m * 1.0 / 1e6;
-        }
+    // return current unix timestamp
+    void restart() {
+        m_start_time = std::chrono::high_resolution_clock::now();
+    }
 
+    // return duration in seconds
+    double duration() const {
+        auto now = std::chrono::high_resolution_clock::now();
+        auto m = std::chrono::duration_cast<std::chrono::microseconds>(now - m_start_time).count();
+        return m * 1.0 / 1e6;
+    }
+
+    // protected members
     protected:
-        std::chrono::time_point<Clock> m_start_time;
+
+    std::chrono::time_point<Clock> m_start_time;
 
 };
 
@@ -723,11 +645,6 @@ struct TotalTimerGlobalGuard
 //File: imgproc.hh
 //================
 
-
-Mat32f read_img(const char* fname);
-void write_rgb(const char* fname, const Mat32f& mat);
-inline void write_rgb(const std::string s, const Mat32f& mat) { write_rgb(s.c_str(), mat); }
-
 template <typename T>
 void resize(const Mat<T> &src, Mat<T> &dst);
 
@@ -740,98 +657,98 @@ Mat32f rgb2grey(const Mat32f& mat);
 //=================
 
 class GaussCache {
-	public:
-		std::unique_ptr<float, std::default_delete<float[]>> kernel_buf;
-		float* kernel;
-		int kw;
-		GaussCache(float sigma);
+    public:
+        std::unique_ptr<float, std::default_delete<float[]>> kernel_buf;
+        float* kernel;
+        int kw;
+        GaussCache(float sigma);
 };
 
 class GaussianBlur {
-	float sigma;
-	GaussCache gcache;
-	public:
-		GaussianBlur(float sigma): sigma(sigma), gcache(sigma) {}
+    float sigma;
+    GaussCache gcache;
+    public:
+        GaussianBlur(float sigma): sigma(sigma), gcache(sigma) {}
 
-		// TODO faster convolution
-		template <typename T>
-		Mat<T> blur(const Mat<T>& img) const {
-			m_assert(img.channels() == 1);
-			TotalTimer tm("gaussianblur");
-			const int w = img.width(), h = img.height();
-			Mat<T> ret(h, w, img.channels());
+        // TODO faster convolution
+        template <typename T>
+        Mat<T> blur(const Mat<T>& img) const {
+            m_assert(img.channels() == 1);
+            TotalTimer tm("gaussianblur");
+            const int w = img.width(), h = img.height();
+            Mat<T> ret(h, w, img.channels());
 
-			const int kw = gcache.kw;
-			const int center = kw / 2;
-			float * kernel = gcache.kernel;
+            const int kw = gcache.kw;
+            const int center = kw / 2;
+            float * kernel = gcache.kernel;
 
-			std::vector<T> cur_line_mem(center * 2 + std::max(w, h), 0);
-			T *cur_line = cur_line_mem.data() + center;
+            std::vector<T> cur_line_mem(center * 2 + std::max(w, h), 0);
+            T *cur_line = cur_line_mem.data() + center;
 
-			// apply to columns
-			REP(j, w){
-				const T* src = img.ptr(0, j);
-				// copy a column of src
-				REP(i, h) {
-					cur_line[i] = *src;
-					src += w;
-				}
+            // apply to columns
+            REP(j, w){
+                const T* src = img.ptr(0, j);
+                // copy a column of src
+                REP(i, h) {
+                    cur_line[i] = *src;
+                    src += w;
+                }
 
-				// pad the border with border value
-				T v0 = cur_line[0];
-				for (int i = 1; i <= center; i ++)
-					cur_line[-i] = v0;
-				v0 = cur_line[h - 1];
-				for (int i = 0; i < center; i ++)
-					cur_line[h + i] = v0;
+                // pad the border with border value
+                T v0 = cur_line[0];
+                for (int i = 1; i <= center; i ++)
+                    cur_line[-i] = v0;
+                v0 = cur_line[h - 1];
+                for (int i = 0; i < center; i ++)
+                    cur_line[h + i] = v0;
 
-				T *dest = ret.ptr(0, j);
-				REP(i, h) {
-					T tmp{0};
-					for (int k = -center; k <= center; k ++)
-						tmp += cur_line[i + k] * kernel[k];
-					*dest = tmp;
-					dest += w;
-				}
-			}
+                T *dest = ret.ptr(0, j);
+                REP(i, h) {
+                    T tmp{0};
+                    for (int k = -center; k <= center; k ++)
+                        tmp += cur_line[i + k] * kernel[k];
+                    *dest = tmp;
+                    dest += w;
+                }
+            }
 
-			// apply to rows
-			REP(i, h) {
-				T *dest = ret.ptr(i);
-				memcpy(cur_line, dest, sizeof(T) * w);
-				{	// pad the border
-					T v0 = cur_line[0];
-					for (int j = 1; j <= center; j ++)
-						cur_line[-j] = v0;
-					v0 = cur_line[w - 1];
-					for (int j = 0; j < center; j ++)
-						cur_line[w + j] = v0;
-				}
-				REP(j, w) {
-					T tmp{0};
-					for (int k = -center; k <= center; k ++)
-						tmp += cur_line[j + k] * kernel[k];
-					*(dest ++) = tmp;
-				}
-			}
-			return ret;
-		}
+            // apply to rows
+            REP(i, h) {
+                T *dest = ret.ptr(i);
+                memcpy(cur_line, dest, sizeof(T) * w);
+                {    // pad the border
+                    T v0 = cur_line[0];
+                    for (int j = 1; j <= center; j ++)
+                        cur_line[-j] = v0;
+                    v0 = cur_line[w - 1];
+                    for (int j = 0; j < center; j ++)
+                        cur_line[w + j] = v0;
+                }
+                REP(j, w) {
+                    T tmp{0};
+                    for (int k = -center; k <= center; k ++)
+                        tmp += cur_line[j + k] * kernel[k];
+                    *(dest ++) = tmp;
+                }
+            }
+            return ret;
+        }
 };
 
 class MultiScaleGaussianBlur {
-	std::vector<GaussianBlur> gauss;		// size = nscale - 1
-	public:
-	MultiScaleGaussianBlur(
-			int nscale, float gauss_sigma,
-			float scale_factor) {
-		REP(k, nscale - 1) {
-			gauss.emplace_back(gauss_sigma);
-			gauss_sigma *= scale_factor;
-		}
-	}
+    std::vector<GaussianBlur> gauss;        // size = nscale - 1
+    public:
+    MultiScaleGaussianBlur(
+            int nscale, float gauss_sigma,
+            float scale_factor) {
+        REP(k, nscale - 1) {
+            gauss.emplace_back(gauss_sigma);
+            gauss_sigma *= scale_factor;
+        }
+    }
 
-	Mat32f blur(const Mat32f& img, int n) const
-	{ return gauss[n - 1].blur(img); }
+    Mat32f blur(const Mat32f& img, int n) const
+    { return gauss[n - 1].blur(img); }
 };
 
 
@@ -843,26 +760,26 @@ class MultiScaleGaussianBlur {
 
 // Given an image, build an octave with different blurred version
 class GaussianPyramid {
-	private:
-		int nscale;
-		std::vector<Mat32f> data; // len = nscale
-		std::vector<Mat32f> mag; // len = nscale
-		std::vector<Mat32f> ort; // len = nscale, value \in [0, 2 * pi]
+    private:
+        int nscale;
+        std::vector<Mat32f> data; // len = nscale
+        std::vector<Mat32f> mag; // len = nscale
+        std::vector<Mat32f> ort; // len = nscale, value \in [0, 2 * pi]
 
-		void cal_mag_ort(int);
+        void cal_mag_ort(int);
 
-	public:
-		int w, h;
+    public:
+        int w, h;
 
-		GaussianPyramid(const Mat32f&, int num_scale);
+        GaussianPyramid(const Mat32f&, int num_scale);
 
-		inline const Mat32f& get(int i) const { return data[i]; }
+        inline const Mat32f& get(int i) const { return data[i]; }
 
-		inline const Mat32f& get_mag(int i) const { return mag[i]; }
+        inline const Mat32f& get_mag(int i) const { return mag[i]; }
 
-		inline const Mat32f& get_ort(int i) const { return ort[i]; }
+        inline const Mat32f& get_ort(int i) const { return ort[i]; }
 
-		int get_len() const { return nscale; }
+        int get_len() const { return nscale; }
 };
 
 class ScaleSpace
@@ -870,7 +787,7 @@ class ScaleSpace
     public:
         int noctave, nscale;
         const int origw, origh;
-        std::vector<GaussianPyramid> pyramids;	// len = noctave
+        std::vector<GaussianPyramid> pyramids;    // len = noctave
 
         ScaleSpace(const Mat32f&, int num_octave, int num_scale);
         ScaleSpace(const ScaleSpace&) = delete;
@@ -1047,49 +964,4 @@ class SIFTDetector : public FeatureDetector {
 };
 
 
-
-//=================
-//File: imageref.hh
-//=================
-
-
-// A transparent reference to a image in file
-struct ImageRef
-{
-    std::string fname;
-    Mat32f* img = nullptr;
-    int _width, _height;
-
-    ImageRef(const std::string& fname): fname(fname) {}
-    ~ImageRef() { if (img) delete img; }
-
-    void load()
-    {
-        if (img)
-        {
-            return;
-        }
-        img = new Mat32f{read_img(fname.c_str())};
-        _width = img->width();
-        _height = img->height();
-    }
-
-    void release()
-    {
-        if (img)
-        {
-            delete img;
-        }
-    img = nullptr;
-    }
-
-    int width() const
-    {
-        return _width;
-    }
-
-    int height() const
-    {
-        return _height;
-    }
-};
+#endif /* _IMAGE_UTILS_H_ */
