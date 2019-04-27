@@ -4,3 +4,7 @@ out.jpg
 tbd/
 stitch
 image-stitching
+*.o
+vivado_hls.log
+stitch_features_prj
+

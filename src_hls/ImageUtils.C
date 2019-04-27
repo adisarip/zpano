@@ -185,7 +185,7 @@ void error_exit(const std::string& s)
 //===============
 
 #undef Success
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 namespace {
 inline Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>

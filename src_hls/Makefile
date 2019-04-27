@@ -13,7 +13,7 @@ OBJECTS := $(FILES:$(SRCDIR)/%.C=$(OBJDIR)/%.o)
 
 TARGET  = stitch
 CC      = g++
-CCFLAGS = -std=c++1z -I/usr/include/eigen3/
+CCFLAGS = -std=c++1z
 LDFLAGS = -lm -lpthread -lX11
 
 $(BINDIR)/$(TARGET): $(OBJECTS)
